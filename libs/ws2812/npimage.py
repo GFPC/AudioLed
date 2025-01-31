@@ -1,7 +1,6 @@
 import spidev
 import ws2812
 import time
-import getopt
 import numpy
 from numpy import exp, sin, pi
 
@@ -35,7 +34,7 @@ def test_gauss(spi, shape=(8,8), intensity=20):
             time.sleep(stepTime)
             
     except KeyboardInterrupt:
-        ws2812.write2812(spi, [[0,0,0]]*(shape[0]*shape[1]))
+        ws2812.write2812(spi, [[0, 0, 0]] * (shape[0] * shape[1]))
 
 def test_heart(spi, shape=(8,8), intensity=20):
     
@@ -74,7 +73,7 @@ def test_heart(spi, shape=(8,8), intensity=20):
             time.sleep(stepTime)
             
     except KeyboardInterrupt:
-        ws2812.write2812(spi, [[0,0,0]]*(shape[0]*shape[1]))
+        ws2812.write2812(spi, [[0, 0, 0]] * (shape[0] * shape[1]))
 
 if __name__=="__main__":
     spi = spidev.SpiDev()

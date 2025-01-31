@@ -1,7 +1,7 @@
 import spidev
 import ws2812
 import time
-import getopt
+
 
 def test_loop(spi, nLED=8, intensity=20):
     stepTime=0.1

@@ -1,13 +1,13 @@
 import time
 
 import spidev
-import ws2812
+from libs.ws2812 import ws2812
 
 LEDS_NUM = 90
 
 spi = spidev.SpiDev()
 spi.open(1,0)
-ws2812.write2812(spi, [[10,0,0], [0,10,0], [0,0,10], [10, 10, 0]])
+ws2812.write2812(spi, [[10, 0, 0], [0, 10, 0], [0, 0, 10], [10, 10, 0]])
 
 def ClearAll():
     buf = []

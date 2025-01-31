@@ -1,6 +1,6 @@
 import numpy, pyaudio
 import signal, sys, time, math
-import spidev, ws2812, colorsys
+import spidev, ws2812
 
 PIXELS = 150
 BRIGHTNESS = 255
