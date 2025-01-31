@@ -11,7 +11,7 @@ PIXELS = 150
 DIVIDER = 10000/PIXELS
 
 spi = spidev.SpiDev()
-spi.open(0,0)
+spi.open(1,0)
 
 CHUNK = 2**11
 RATE = 44100
