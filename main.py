@@ -1,3 +1,4 @@
+import random
 import time
 
 import spidev
@@ -18,7 +19,7 @@ def ClearAll():
 while True:
     buf = [[0, 0, 0] for i in range(LEDS_NUM)]
     for i in range(LEDS_NUM):
-        buf[i] = [255, 255, 255]
+        buf[i] = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         time.sleep(0.01)
         ws2812.write2812(spi, buf)
     time.sleep(1)
