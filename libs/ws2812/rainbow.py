@@ -2,10 +2,10 @@ import numpy
 import signal, sys, time
 import spidev, ws2812, colorsys
 
-PIXELS = 150
+PIXELS = 90
 BRIGHTNESS = 255
 VELOCITY = 10
-SPI_DEVICE = 0
+SPI_DEVICE = 1
 
 spi = spidev.SpiDev()
 spi.open(SPI_DEVICE, 0)
