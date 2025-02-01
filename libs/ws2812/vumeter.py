@@ -17,10 +17,12 @@ CHUNK = 2**11
 RATE = 44100
 
 p = pyaudio.PyAudio()
-print(p.get_device_count())
+print("Devices Count: ",p.get_device_count())
+print("Default device: ",p.get_default_input_device_info())
+
 stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
               frames_per_buffer=CHUNK)
-
+print("**INITIALIZED**")
 def signal_handler(sig, frame):
   print('You pressed Ctrl+C!')
   #clear leds
