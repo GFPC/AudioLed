@@ -18,7 +18,6 @@ RATE = 44100
 
 p = pyaudio.PyAudio()
 print("Devices Count: ",p.get_device_count())
-print("Default device: ",p.get_default_output_device_info())
 
 stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,output=True,
               frames_per_buffer=CHUNK,output_device_index=0, input_device_index=1)
