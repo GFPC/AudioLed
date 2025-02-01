@@ -2,10 +2,10 @@ import numpy, pyaudio
 import signal, sys, time, math
 import spidev, ws2812
 
-PIXELS = 150
+PIXELS = 90
 BRIGHTNESS = 255
 VELOCITY = 10
-SPI_DEVICE = 0
+SPI_DEVICE = 1
 
 spi = spidev.SpiDev()
 spi.open(SPI_DEVICE, 0)
