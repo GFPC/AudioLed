@@ -17,7 +17,6 @@ CHUNK = 2**11
 RATE = 44100
 
 p = pyaudio.PyAudio()
-print(p.get_default_input_device_info())
 print(p.get_device_count())
 stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
               frames_per_buffer=CHUNK)
