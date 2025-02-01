@@ -18,9 +18,9 @@ RATE = 44100
 
 p = pyaudio.PyAudio()
 print("Devices Count: ",p.get_device_count())
-print("Default device: ",p.get_default_input_device_info())
+print("Default device: ",p.get_default_output_device_info())
 
-stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,output=True,
+stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
               frames_per_buffer=CHUNK)
 print("**INITIALIZED**")
 def signal_handler(sig, frame):
