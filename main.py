@@ -3,7 +3,6 @@ import time
 
 import spidev
 from libs.ws2812 import ws2812
-
 LEDS_NUM = 90
 
 spi = spidev.SpiDev()
