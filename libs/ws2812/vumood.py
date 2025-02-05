@@ -62,28 +62,6 @@ while True:
   print(amplitude, brightness)
   for i in range(PIXELS):
     out[i] = [brightness, brightness, brightness]
-    ws2812.write2812(spi, out)
-  time.sleep(0.05)
-  continue
-  print(freqs.min(), freqs.max(), spectrum.min(), spectrum.max())
-  print(freqs)
-  for i in range(PIXELS):
-    #h = (i/PIXELS + t) % 1.0
-    #data[i] = gamma(colorsys.hsv_to_rgb(h, 1.0, BRIGHTNESS))
-    #m = t * 10
-    m = t * 100
-    p1 = 7
-    p2 = 5
-    v = math.sin(m+(i/p1))
-    v2 = math.sin((-m)+(i/p1))
-    v3 = math.sin(m*3.5+(i/p2))
-    r = (v+1)/2
-    g = (v2+1)/2
-    b = (v3+1)/2
-    #a = 255
-    #a = peak/100-20
-    a = peak/50-35
-    out[i] = gamma([r*a, g*a, b*a])
   ws2812.write2812(spi, out)
   time.sleep(0.05)
 
