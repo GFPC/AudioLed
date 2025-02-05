@@ -10,58 +10,71 @@ SPI_DEVICE = 1
 spi = spidev.SpiDev()
 spi.open(SPI_DEVICE, 0)
 
-#CHUNK = 2**11
-CHUNK = 2**12
+# CHUNK = 2**11
+CHUNK = 2 ** 12
 RATE = 44100
 
 p = pyaudio.PyAudio()
-stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
-              frames_per_buffer=CHUNK)
+stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True,
+                frames_per_buffer=CHUNK)
+
 
 def signal_handler(sig, frame):
-  print('You pressed Ctrl+C!')
-  #clear leds
-  data = numpy.zeros((PIXELS, 3), dtype=numpy.uint8)
-  ws2812.write2812(spi, data)
-  #stop audio
-  stream.stop_stream()
-  stream.close()
-  p.terminate()
-  sys.exit(0)
+    print('You pressed Ctrl+C!')
+    # clear leds
+    data = numpy.zeros((PIXELS, 3), dtype=numpy.uint8)
+    ws2812.write2812(spi, data)
+    # stop audio
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+    sys.exit(0)
+
 
 signal.signal(signal.SIGINT, signal_handler)
 
-gamma_table = (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7,8,8,8,9,9,9,10,10,10,11,11,11,12,12,13,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,24,24,25,25,26,27,27,28,29,29,30,31,32,32,33,34,35,35,36,37,38,39,39,40,41,42,43,44,45,46,47,48,49,50,50,51,52,54,55,56,57,58,59,60,61,62,63,64,66,67,68,69,70,72,73,74,75,77,78,79,81,82,83,85,86,87,89,90,92,93,95,96,98,99,101,102,104,105,107,109,110,112,114,115,117,119,120,122,124,126,127,129,131,133,135,137,138,140,142,144,146,148,150,152,154,156,158,160,162,164,167,169,171,173,175,177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255)
+gamma_table = (
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10,
+10, 10, 11, 11, 11, 12, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 24,
+24, 25, 25, 26, 27, 27, 28, 29, 29, 30, 31, 32, 32, 33, 34, 35, 35, 36, 37, 38, 39, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+48, 49, 50, 50, 51, 52, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 72, 73, 74, 75, 77, 78, 79, 81,
+82, 83, 85, 86, 87, 89, 90, 92, 93, 95, 96, 98, 99, 101, 102, 104, 105, 107, 109, 110, 112, 114, 115, 117, 119, 120,
+122, 124, 126, 127, 129, 131, 133, 135, 137, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 167,
+169, 171, 173, 175, 177, 180, 182, 184, 186, 189, 191, 193, 196, 198, 200, 203, 205, 208, 210, 213, 215, 218, 220, 223,
+225, 228, 231, 233, 236, 239, 241, 244, 247, 249, 252, 255)
 
 
 def calculate_amplitude(data, rate, freq_range):
-  # Применение FFT
-  fft_data = numpy.fft.fft(data)
-  freqs = numpy.fft.fftfreq(len(fft_data), 1.0 / rate)
+    # Применение FFT
+    fft_data = numpy.fft.fft(data)
+    freqs = numpy.fft.fftfreq(len(fft_data), 1.0 / rate)
 
-  # Фильтрация частот в заданном диапазоне
-  mask = (freqs >= freq_range[0]) & (freqs <= freq_range[1])
-  fft_filtered = fft_data[mask]
+    # Фильтрация частот в заданном диапазоне
+    mask = (freqs >= freq_range[0]) & (freqs <= freq_range[1])
+    fft_filtered = fft_data[mask]
 
-  # Вычисление амплитуды
-  amplitude = numpy.abs(fft_filtered).mean()
-  return amplitude
+    # Вычисление амплитуды
+    amplitude = numpy.abs(fft_filtered).mean()
+    return amplitude
+
+
 def gamma(c):
-  r = max(min(int(c[0]), 255), 0)
-  g = max(min(int(c[1]), 255), 0)
-  b = max(min(int(c[2]), 255), 0)
-  return (r, g, b)
+    r = max(min(int(c[0]), 255), 0)
+    g = max(min(int(c[1]), 255), 0)
+    b = max(min(int(c[2]), 255), 0)
+    return (r, g, b)
+
 
 out = numpy.zeros((PIXELS, 3), dtype=numpy.uint8)
 while True:
-  t = time.time() / VELOCITY
-  data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
-  peak = numpy.amax(numpy.abs(data))
-  amplitude = calculate_amplitude(data, RATE, [20, 30])
-  brightness = int(numpy.clip(amplitude / 100000, 0, 1) * 255)
-  print(amplitude, brightness)
-  for i in range(PIXELS):
-    out[i] = [brightness, brightness, brightness]
-  ws2812.write2812(spi, out)
-  time.sleep(0.05)
-
+    t = time.time() / VELOCITY
+    data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
+    peak = numpy.amax(numpy.abs(data))
+    amplitude = calculate_amplitude(data, RATE, [20, 30])
+    brightness = int(numpy.clip(amplitude / 1000000, 0, 1) * 255)
+    print(amplitude, brightness)
+    for i in range(PIXELS):
+        out[i] = [brightness, brightness, brightness]
+    ws2812.write2812(spi, out)
+    time.sleep(0.05)
