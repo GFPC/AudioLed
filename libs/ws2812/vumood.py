@@ -57,8 +57,9 @@ def calculate_amplitude(data, rate, freq_range):
     # Вычисление амплитуды
     amplitude = numpy.abs(fft_filtered).mean()
     return amplitude
-def HexToRGB(hex):
-    return tuple(int(hex[i:i + 2], 16) for i in (0, 2, 4))
+def HexToRGB(hex, brightness=255):
+    return tuple(int(hex[i:i + 2], 16) * brightness / 255 for i in (0, 2, 4))
+
 
 def gamma(c):
     r = max(min(int(c[0]), 255), 0)
