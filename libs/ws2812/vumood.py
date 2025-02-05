@@ -57,7 +57,7 @@ while True:
   t = time.time() / VELOCITY
   data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
   peak = numpy.amax(numpy.abs(data))
-  amplitude = calculate_amplitude(data, RATE, [20, 58])
+  amplitude = calculate_amplitude(data, RATE, [20, 30])
   brightness = int(numpy.clip(amplitude / 100000, 0, 1) * 255)
   print(amplitude, brightness)
   for i in range(PIXELS):
