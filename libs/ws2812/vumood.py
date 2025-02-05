@@ -57,7 +57,8 @@ def calculate_amplitude(data, rate, freq_range):
     # Вычисление амплитуды
     amplitude = numpy.abs(fft_filtered).mean()
     return amplitude
-
+def HexToRGB(hex):
+    return tuple(int(hex[i:i + 2], 16) for i in (0, 2, 4))
 
 def gamma(c):
     r = max(min(int(c[0]), 255), 0)
@@ -75,6 +76,6 @@ while True:
     brightness = int(numpy.clip(amplitude / 10000000, 0, 1) * 255)
     print(amplitude, brightness)
     for i in range(PIXELS):
-        out[i] = [brightness, brightness, brightness]
+        out[i] = HexToRGB("2be3bc")
     ws2812.write2812(spi, out)
     time.sleep(0.01)
