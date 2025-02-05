@@ -67,16 +67,16 @@ def gamma(c):
     b = max(min(int(c[2]), 255), 0)
     return (r, g, b)
 
-
+freq_bars = [(0, 2444), (2444, 4888), (4888, 7332), (7332, 9776), (9776, 12220), (12220, 14664), (14664, 17108), (17108, 19552), (19552, 22000)]
 out = numpy.zeros((PIXELS, 3), dtype=numpy.uint8)
 while True:
     t = time.time() / VELOCITY
     data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
     peak = numpy.amax(numpy.abs(data))
-    amplitude = calculate_amplitude(data, RATE, [0,58])
-    brightness = int(numpy.clip(amplitude / 10000000, 0, 1) * 255)
-    print(amplitude, brightness)
-    for i in range(PIXELS):
-        out[i] = HexToRGB("95f3cb", brightness)
+    amplitudes = [ calculate_amplitude(data, RATE, freq_bars[i]) for i in range(len(freq_bars))]
+    for i in range(len(amplitudes)):
+        color = HexToRGB("ffffff", int(i))
+        for k in range(10):
+            out[i * 10 + k] = color
     ws2812.write2812(spi, out)
     time.sleep(0.01)
