@@ -45,8 +45,9 @@ while True:
   data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
   peak = numpy.amax(numpy.abs(data))
   sine_vals = numpy.fft.fft(data)
-  frequency = numpy.fft.fftfreq(data.shape[0])
-  print(sine_vals)
+  freqs = numpy.fft.fftfreq(data.shape[0])
+  print(freqs.min(), freqs.max())
+  print(freqs)
   for i in range(PIXELS):
     #h = (i/PIXELS + t) % 1.0
     #data[i] = gamma(colorsys.hsv_to_rgb(h, 1.0, BRIGHTNESS))
