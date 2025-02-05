@@ -62,6 +62,7 @@ while True:
   print(amplitude, brightness)
   for i in range(PIXELS):
     out[i] = [brightness, brightness, brightness]
+    ws2812.write2812(spi, out)
   continue
   print(freqs.min(), freqs.max(), spectrum.min(), spectrum.max())
   print(freqs)
