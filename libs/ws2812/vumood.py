@@ -44,9 +44,9 @@ while True:
   t = time.time() / VELOCITY
   data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
   peak = numpy.amax(numpy.abs(data))
-  sine_vals = numpy.fft.fft(data)
-  freqs = numpy.fft.fftfreq(data.shape[0])
-  print(freqs.min(), freqs.max())
+  spectrum = np.fft.fft(data)
+  freqs = np.fft.fftfreq(len(data)) * RATE
+  print(freqs.min(), freqs.max(), spectrum.min(), spectrum.max())
   print(freqs)
   for i in range(PIXELS):
     #h = (i/PIXELS + t) % 1.0
