@@ -58,10 +58,10 @@ while True:
   data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
   peak = numpy.amax(numpy.abs(data))
   amplitude = calculate_amplitude(data, RATE, [20, 58])
-  brightness = int(numpy.clip(amplitude / 1000, 0, 1) * 255)
+  brightness = int(numpy.clip(amplitude / 100000, 0, 1) * 255)
   print(amplitude, brightness)
   for i in range(PIXELS):
-    out[i] = gamma([brightness, brightness, brightness])
+    out[i] = [brightness, brightness, brightness]
   continue
   print(freqs.min(), freqs.max(), spectrum.min(), spectrum.max())
   print(freqs)
