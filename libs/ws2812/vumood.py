@@ -77,6 +77,6 @@ while True:
     brightness = int(numpy.clip(amplitude / 10000000, 0, 1) * 255)
     print(amplitude, brightness)
     for i in range(PIXELS):
-        out[i] = HexToRGB("2be3bc")
+        out[i] = HexToRGB("2be3bc", brightness)
     ws2812.write2812(spi, out)
     time.sleep(0.01)
