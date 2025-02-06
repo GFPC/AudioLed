@@ -53,7 +53,7 @@ while True:
     t = time.time() / VELOCITY
     data = numpy.frombuffer(stream.read(CHUNK), dtype=numpy.int16)
     peak = numpy.amax(numpy.abs(data))
-    bass_amp = calculate_amplitude(data, RATE, [0, 58])
+    bass_amp = calculate_amplitude(data, RATE, [0, 80])
     if bass_amp < 1500000:
         ws2812.write2812(spi, [[0, 0, 0] for i in range(PIXELS)])
         continue
