@@ -51,7 +51,7 @@ freq_bars = [(0, 2444), (2444, 4888), (4888, 7332), (7332, 9776), (9776, 12220),
 out = numpy.zeros((PIXELS, 3), dtype=numpy.uint8)
 while True:
     t = time.time() / VELOCITY
-    data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
+    data = numpy.frombuffer(stream.read(CHUNK), dtype=numpy.int16)
     peak = numpy.amax(numpy.abs(data))
     bass_amp = calculate_amplitude(data, RATE, [0, 58])
     for i in range(PIXELS):
