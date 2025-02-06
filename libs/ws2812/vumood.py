@@ -56,7 +56,7 @@ while True:
     bass_amp = calculate_amplitude(data, RATE, [0, 80])
     bass_brightness = int(numpy.clip(bass_amp / 4000000, 0, 1) * BRIGHTNESS)
     if bass_amp < 1500000:
-        ws2812.write2812(spi, [[0, 0, 0] for i in range(PIXELS)])
+        ws2812.write2812(spi, [[50, 50, 50] for i in range(PIXELS)])
         continue
     for i in range(PIXELS):
         color = [
