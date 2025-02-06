@@ -53,11 +53,15 @@ while True:
     t = time.time() / VELOCITY
     data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
     peak = numpy.amax(numpy.abs(data))
-    amplitudes = [ calculate_amplitude(data, RATE, freq_bars[i]) for i in range(len(freq_bars))]
+    bass_amp = calculate_amplitude(data, RATE, [0, 58])
+    for i in range(PIXELS):
+        color = HexToRGB("ffffff", int(i))
+        out[i] = color
+    """amplitudes = [ calculate_amplitude(data, RATE, freq_bars[i]) for i in range(len(freq_bars))]
     print(amplitudes)
     for i in range(len(amplitudes)):
         color = HexToRGB("ffffff", int(i))
         for k in range(10):
-            out[i * 10 + k] = color
+            out[i * 10 + k] = color"""
     ws2812.write2812(spi, out)
     time.sleep(0.001)
