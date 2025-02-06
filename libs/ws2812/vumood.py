@@ -74,7 +74,7 @@ while True:
     data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
     peak = numpy.amax(numpy.abs(data))
     amplitudes = [ calculate_amplitude(data, RATE, freq_bars[i]) for i in range(len(freq_bars))]
-    print("AMPLITUDES LEN:", len(amplitudes), "PEAK:", peak)
+    print("AMPLITUDES LEN:", len(amplitudes))
     for i in range(len(amplitudes)):
         color = HexToRGB("ffffff", int(i))
         for k in range(10):
