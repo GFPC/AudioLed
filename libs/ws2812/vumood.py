@@ -1,4 +1,4 @@
-import numpy, pyaudio
+import numpy as np, pyaudio
 import signal, sys, time, math
 import spidev, ws2812
 
@@ -17,55 +17,80 @@ RATE = 44100
 p = pyaudio.PyAudio()
 stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,frames_per_buffer=CHUNK)
 
+
+stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,frames_per_buffer=CHUNK)
+
 print("**INITIALIZED**")
-def signal_handler(sig, frame):
-    print('You pressed Ctrl+C!')
-    # clear leds
-    data = numpy.zeros((PIXELS, 3), dtype=numpy.uint8)
-    ws2812.write2812(spi, data)
-    # stop audio
+# Параметры сглаживания (EMA)
+SMOOTHING_FACTOR = 0.2  # Коэффициент сглаживания (0 < SMOOTHING_FACTOR < 1)
+smoothed_bass_level = 0  # Начальное значение для сглаженного уровня басса
+
+
+def calculate_bass_level(data, rate):
+    """
+    Вычисляет уровень басса (низких частот) из аудиоданных.
+    """
+    # Применение FFT для перевода в частотную область
+    fft_data = np.fft.fft(data)
+    freqs = np.fft.fftfreq(len(fft_data), 1.0 / rate)
+
+    # Фильтрация низких частот (басс: 20-200 Гц)
+    bass_range = (20, 200)
+    mask = (freqs >= bass_range[0]) & (freqs <= bass_range[1])
+    fft_filtered = fft_data[mask]
+
+    # Вычисление амплитуды басса
+    bass_amplitude = np.abs(fft_filtered).mean()
+    return bass_amplitude
+
+
+def map_value(value, in_min, in_max, out_min, out_max):
+    """
+    Преобразует значение из одного диапазона в другой.
+    """
+    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
+
+def smooth_value(current_value, target_value, smoothing_factor):
+    """
+    Сглаживает значение с использованием экспоненциального скользящего среднего (EMA).
+    """
+    return smoothing_factor * target_value + (1 - smoothing_factor) * current_value
+
+
+try:
+    out = []
+    while True:
+        # Чтение данных из аудиопотока
+        data = stream.read(CHUNK, exception_on_overflow=False)
+        audio_data = np.frombuffer(data, dtype=np.int16)
+
+        # Вычисление уровня басса
+        bass_level = calculate_bass_level(audio_data, RATE)
+
+        # Сглаживание уровня басса
+        smoothed_bass_level = smooth_value(smoothed_bass_level, bass_level, SMOOTHING_FACTOR)
+
+        # Нормализация уровня басса к диапазону 0-255
+        brightness = int(map_value(smoothed_bass_level, 0, 5000, 0, 255))  # Настройте 5000 под ваш сигнал
+        brightness = np.clip(brightness, 0, 255)  # Ограничение значения
+
+        # Смена цвета в зависимости от уровня басса
+        # Например, от синего (низкий басс) до красного (высокий басс)
+        red = brightness
+        green = 0
+        blue = 255 - brightness
+
+        for i in range(PIXELS):
+            out[i] = [red, green, blue]
+        ws2812.write2812(spi, out)
+
+except KeyboardInterrupt:
+    pass
+
+finally:
+    # Очистка
     stream.stop_stream()
     stream.close()
     p.terminate()
-    sys.exit(0)
-
-
-signal.signal(signal.SIGINT, signal_handler)
-
-def calculate_amplitude(data, rate, freq_range):
-    # Применение FFT
-    fft_data = numpy.fft.fft(data)
-    freqs = numpy.fft.fftfreq(len(fft_data), 1.0 / rate)
-
-    # Фильтрация частот в заданном диапазоне
-    mask = (freqs >= freq_range[0]) & (freqs <= freq_range[1])
-    fft_filtered = fft_data[mask]
-
-    # Вычисление амплитуды
-    amplitude = numpy.abs(fft_filtered).mean()
-    return amplitude
-def HexToRGB(hex, brightness=255):
-    return tuple(int(hex[i:i + 2], 16) * brightness / 255 for i in (0, 2, 4))
-
-freq_bars = [(0, 2444), (2444, 4888), (4888, 7332), (7332, 9776), (9776, 12220), (12220, 14664), (14664, 17108), (17108, 19552), (19552, 22000)]
-out = numpy.zeros((PIXELS, 3), dtype=numpy.uint8)
-while True:
-    t = time.time() / VELOCITY
-    data = numpy.frombuffer(stream.read(CHUNK), dtype=numpy.int16)
-    peak = numpy.amax(numpy.abs(data))
-    bass_amp = calculate_amplitude(data, RATE, [0, 80])
-    bass_brightness = int(numpy.clip(bass_amp / 4000000, 0, 1) * BRIGHTNESS)
-    if bass_amp < 1000000:
-        for i in range(PIXELS):
-            out[i] = [int(out[i][0] * 0.5), int(out[i][1] * 0.5), int(out[i][2] * 0.5)]
-        ws2812.write2812(spi, [[50, 50, 50] for i in range(PIXELS)])
-        continue
-    for i in range(PIXELS):
-        color = [
-            bass_brightness,
-            bass_brightness,
-            bass_brightness
-        ]
-        out[i] = color
-    ws2812.write2812(spi, out)
-    time.sleep(0.0002)
+    ws2812.write2812(spi, [[0, 0, 0]*PIXELS])
