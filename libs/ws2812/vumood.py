@@ -62,9 +62,9 @@ while True:
         continue
     for i in range(PIXELS):
         color = [
-            0,
             bass_brightness,
-            0
+            bass_brightness,
+            bass_brightness
         ]
         out[i] = color
     ws2812.write2812(spi, out)
