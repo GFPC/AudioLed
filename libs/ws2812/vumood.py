@@ -55,7 +55,7 @@ while True:
     peak = numpy.amax(numpy.abs(data))
     bass_amp = calculate_amplitude(data, RATE, [0, 58])
     for i in range(PIXELS):
-        color = HexToRGB("ffffff", int(i))
+        color = HexToRGB("ffffff", int(bass_amp))
         out[i] = color
     """amplitudes = [ calculate_amplitude(data, RATE, freq_bars[i]) for i in range(len(freq_bars))]
     print(amplitudes)
