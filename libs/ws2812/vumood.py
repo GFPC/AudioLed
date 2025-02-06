@@ -60,8 +60,8 @@ while True:
         continue
     for i in range(PIXELS):
         color = [
-            bass_brightness,
             0,
+            bass_brightness,
             255-bass_brightness
         ]
         out[i] = color
