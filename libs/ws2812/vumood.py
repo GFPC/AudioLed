@@ -35,7 +35,7 @@ def calculate_bass_level(data, rate):
     freqs = np.fft.fftfreq(len(fft_data), 1.0 / rate)
 
     # Фильтрация низких частот (басс: 20-200 Гц)
-    bass_range = (20, 200)
+    bass_range = (20,58)
     mask = (freqs >= bass_range[0]) & (freqs <= bass_range[1])
     fft_filtered = fft_data[mask]
 
