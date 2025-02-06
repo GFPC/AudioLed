@@ -56,7 +56,7 @@ while True:
     bass_amp = calculate_amplitude(data, RATE, [0, 58])
     print(bass_amp)
     for i in range(PIXELS):
-        color = HexToRGB("ffffff", int(bass_amp))
+        color = HexToRGB("ffffff", int(numpy.clip(bass_amp / 1000, 0, 1) * 255))
         out[i] = color
     """amplitudes = [ calculate_amplitude(data, RATE, freq_bars[i]) for i in range(len(freq_bars))]
     print(amplitudes)
