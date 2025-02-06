@@ -59,7 +59,7 @@ def smooth_value(current_value, target_value, smoothing_factor):
 
 
 try:
-    out = []
+    out = [[0,0,0] for i in range(PIXELS)]
     while True:
         # Чтение данных из аудиопотока
         data = stream.read(CHUNK, exception_on_overflow=False)
