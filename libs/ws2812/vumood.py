@@ -59,4 +59,4 @@ while True:
         color = HexToRGB("ffffff", int(numpy.clip(bass_amp / 4000000, 0, 1) * 255))
         out[i] = color
     ws2812.write2812(spi, out)
-    time.sleep(0.01)
+    time.sleep(0.001)
