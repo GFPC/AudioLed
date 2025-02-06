@@ -54,9 +54,9 @@ while True:
     data = numpy.frombuffer(stream.read(CHUNK), dtype=numpy.int16)
     peak = numpy.amax(numpy.abs(data))
     bass_amp = calculate_amplitude(data, RATE, [0, 58])
-    print(bass_amp,int(numpy.clip(bass_amp / 1000, 0, 1) * 255))
+    print(bass_amp,int(numpy.clip(bass_amp / 100000, 0, 1) * 255))
     for i in range(PIXELS):
-        color = HexToRGB("ffffff", int(numpy.clip(bass_amp / 1000, 0, 1) * 255))
+        color = HexToRGB("ffffff", int(numpy.clip(bass_amp / 100000, 0, 1) * 255))
         out[i] = color
     """amplitudes = [ calculate_amplitude(data, RATE, freq_bars[i]) for i in range(len(freq_bars))]
     print(amplitudes)
