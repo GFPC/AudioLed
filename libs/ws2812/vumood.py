@@ -22,7 +22,7 @@ stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,frames_pe
 
 print("**INITIALIZED**")
 # Параметры сглаживания (EMA)
-SMOOTHING_FACTOR = 0.2  # Коэффициент сглаживания (0 < SMOOTHING_FACTOR < 1)
+SMOOTHING_FACTOR = 0.01  # Коэффициент сглаживания (0 < SMOOTHING_FACTOR < 1)
 smoothed_bass_level = 0  # Начальное значение для сглаженного уровня басса
 
 
