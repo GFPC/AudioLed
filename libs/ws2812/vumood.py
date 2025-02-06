@@ -64,4 +64,4 @@ while True:
         for k in range(10):
             out[i * 10 + k] = color"""
     ws2812.write2812(spi, out)
-    time.sleep(0.001)
+    time.sleep(0.05)
