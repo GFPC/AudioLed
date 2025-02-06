@@ -64,7 +64,7 @@ while True:
         color = [
             0,
             bass_brightness,
-            255-bass_brightness
+            0
         ]
         out[i] = color
     ws2812.write2812(spi, out)
