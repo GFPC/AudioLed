@@ -18,7 +18,7 @@ p = pyaudio.PyAudio()
 stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True,
                 frames_per_buffer=CHUNK)
 
-
+print("**INITIALIZED**")
 def signal_handler(sig, frame):
     print('You pressed Ctrl+C!')
     # clear leds
