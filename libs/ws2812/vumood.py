@@ -54,7 +54,6 @@ while True:
     data = numpy.frombuffer(stream.read(CHUNK), dtype=numpy.int16)
     peak = numpy.amax(numpy.abs(data))
     bass_amp = calculate_amplitude(data, RATE, [0, 58])
-    print(bass_amp,int(numpy.clip(bass_amp / 4000000, 0, 1) * 255))
     if bass_amp < 1500000:
         ws2812.write2812(spi, [[0, 0, 0] for i in range(PIXELS)])
         continue
@@ -62,4 +61,4 @@ while True:
         color = HexToRGB("ffffff", int(numpy.clip(bass_amp / 4000000, 0, 1) * 255))
         out[i] = color
     ws2812.write2812(spi, out)
-    time.sleep(0.001)
+    time.sleep(0.0002)
