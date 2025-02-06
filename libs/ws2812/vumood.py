@@ -15,8 +15,7 @@ CHUNK = 2 ** 11
 RATE = 44100
 
 p = pyaudio.PyAudio()
-stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True,
-                frames_per_buffer=CHUNK)
+stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,frames_per_buffer=CHUNK)
 
 print("**INITIALIZED**")
 def signal_handler(sig, frame):
@@ -55,6 +54,7 @@ while True:
     data = numpy.frombuffer(stream.read(CHUNK), dtype=numpy.int16)
     peak = numpy.amax(numpy.abs(data))
     amplitudes = [ calculate_amplitude(data, RATE, freq_bars[i]) for i in range(len(freq_bars))]
+    print(amplitudes)
     for i in range(len(amplitudes)):
         color = HexToRGB("ffffff", int(i))
         for k in range(10):
