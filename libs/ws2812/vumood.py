@@ -58,11 +58,5 @@ while True:
     for i in range(PIXELS):
         color = HexToRGB("ffffff", int(numpy.clip(bass_amp / 4000000, 0, 1) * 255))
         out[i] = color
-    """amplitudes = [ calculate_amplitude(data, RATE, freq_bars[i]) for i in range(len(freq_bars))]
-    print(amplitudes)
-    for i in range(len(amplitudes)):
-        color = HexToRGB("ffffff", int(i))
-        for k in range(10):
-            out[i * 10 + k] = color"""
     ws2812.write2812(spi, out)
-    time.sleep(0.05)
+    time.sleep(0.01)
