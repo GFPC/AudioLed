@@ -17,9 +17,6 @@ RATE = 44100
 p = pyaudio.PyAudio()
 stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,frames_per_buffer=CHUNK)
 
-
-stream = p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,frames_per_buffer=CHUNK)
-
 print("**INITIALIZED**")
 # Параметры сглаживания (EMA)
 SMOOTHING_FACTOR = 1  # Коэффициент сглаживания (0 < SMOOTHING_FACTOR < 1)
