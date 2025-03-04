@@ -69,17 +69,17 @@ try:
         smoothed_bass_level = smooth_value(smoothed_bass_level, bass_level, SMOOTHING_FACTOR)
 
         # Нормализация уровня басса к диапазону 0-255
-        brightness = int(map_value(smoothed_bass_level, 0, 10000000, 10, 255))  # Настройте 5000 под ваш сигнал
+        brightness = map_value(smoothed_bass_level, 0, 10000000, 0, 1)  # Настройте 5000 под ваш сигнал
         brightness = np.clip(brightness, 0, 255)  # Ограничение значения
 
         # Смена цвета в зависимости от уровня басса
         # Например, от синего (низкий басс) до красного (высокий басс)
-        red = 0#brightness
-        green = brightness
-        blue = 0#brightness
+        red = 140*brightness
+        green = 51*brightness
+        blue = 255*brightness
 
         for i in range(PIXELS):
-            out[i] = [red, green, blue]
+            out[i] = [green,red, blue]
         ws2812.write2812(spi, out)
 
 except KeyboardInterrupt:
