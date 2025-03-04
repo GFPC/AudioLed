@@ -74,8 +74,8 @@ try:
 
         # Смена цвета в зависимости от уровня басса
         # Например, от синего (низкий басс) до красного (высокий басс)
-        red = brightness
-        green = 0#brightness
+        red = 0#brightness
+        green = brightness
         blue = 0#brightness
 
         for i in range(PIXELS):
