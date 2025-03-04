@@ -69,14 +69,14 @@ try:
         smoothed_bass_level = smooth_value(smoothed_bass_level, bass_level, SMOOTHING_FACTOR)
 
         # Нормализация уровня басса к диапазону 0-255
-        brightness = map_value(smoothed_bass_level, 0, 10000000, 0, 1)  # Настройте 5000 под ваш сигнал
+        brightness = map_value(smoothed_bass_level, 0, 10000000, 0, 255)/255  # Настройте 5000 под ваш сигнал
         brightness = np.clip(brightness, 0, 255)  # Ограничение значения
 
         # Смена цвета в зависимости от уровня басса
         # Например, от синего (низкий басс) до красного (высокий басс)
-        red = 140*brightness
-        green = 51*brightness
-        blue = 255*brightness
+        red = int(140*brightness)
+        green = int(51*brightness)
+        blue = int(255*brightness)
 
         for i in range(PIXELS):
             out[i] = [green,red, blue]
