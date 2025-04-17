@@ -16,6 +16,7 @@ RATE = 44100
 BASS_RANGE = (20, 200)  # Диапазон частот баса
 SMOOTHING_FACTOR = 0.3  # Коэффициент сглаживания (0.1-0.5 для плавности)
 MAX_HISTORY = 5  # Глубина истории для пикового детектора
+MIN_BASS_THRESHOLD = 1000  # Порог для отображения (подбирается экспериментально)
 
 # Инициализация SPI
 spi = spidev.SpiDev()
@@ -89,6 +90,14 @@ try:
 
         # Вычисление уровня басса
         bass_level = calculate_bass_level(data, RATE)
+
+        # Если басс ниже порога - выключаем светодиоды
+        if bass_level < MIN_BASS_THRESHOLD:
+            ws2812.write2812(spi, [[0, 0, 0] for _ in range(PIXELS)])
+            smoothed_bass = 0
+            bass_history = []
+            peak_bass = 0
+            continue
 
         # Сглаживание и обновление истории
         smoothed_bass = smooth_value(smoothed_bass, bass_level, SMOOTHING_FACTOR)
