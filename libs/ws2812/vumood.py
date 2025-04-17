@@ -106,6 +106,8 @@ try:
         # Нормализация уровня басса
         bass_norm = normalize_bass_level(bass_level, dynamic_max)
 
+        print("BASSLEVEL:", bass_level, "DB", bass_norm, "MAX", dynamic_max)
+
         # Если басс ниже порога - выключаем светодиоды
         if bass_level < MIN_BASS_THRESHOLD:
             ws2812.write2812(spi, [[0, 0, 0] for _ in range(PIXELS)])
