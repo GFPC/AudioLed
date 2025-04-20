@@ -64,6 +64,9 @@ def get_bass_color(bass_strength):
         int(b * MAX_BRIGHTNESS)
     )
 
+def smooth_value(current, target, factor):
+    """Экспоненциальное сглаживание значения"""
+    return factor * target + (1 - factor) * current
 
 try:
     smoothed_bass = 0
