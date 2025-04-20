@@ -12,10 +12,10 @@ CHUNK = 2 ** 11
 RATE = 44100
 
 # Настройки басового детектора
-BASS_RANGE = (20, 150)  # Четкий диапазон басовых частот
+BASS_RANGE = (20, 200)  # Четкий диапазон басовых частот
 SMOOTHING_FACTOR = 0.3  # Плавность реакции
 BASS_THRESHOLD = 1000  # Абсолютный порог баса (подбирается)
-MIN_DB_DIFFERENCE = 10  # Минимальное превышение баса над средним
+MIN_DB_DIFFERENCE = 1  # Минимальное превышение баса над средним
 
 # Инициализация устройств
 spi = spidev.SpiDev()
@@ -78,6 +78,7 @@ try:
 
         # Анализ частот
         bass_db, mid_db = calculate_bass_power(data, RATE)
+        print("Bass: {:.2f} dB, Mid: {:.2f} dB".format(bass_db, mid_db))
 
         # Проверка наличия баса
         if is_bass_active(bass_db, mid_db):
