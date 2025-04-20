@@ -12,12 +12,11 @@ SPI_DEVICE = 1
 CHUNK = 2 ** 11
 RATE = 44100
 
-# Настройки басс-визуализации
-BASS_RANGE = (20, 200)
-SMOOTHING_FACTOR = 0.3
-MIN_BASS_THRESHOLD = 1000  # Порог для включения подсветки
-FIXED_MAX_BASS = 3000000  # Фиксированный максимум для нормализации
-DECAY_TIME = 0.5  # Время затухания (секунды)
+# Настройки обработки звука
+BASS_RANGE = (20, 200)  # Диапазон басовых частот
+SMOOTHING_FACTOR = 0.25  # Коэффициент сглаживания
+MIN_VOLUME_THRESHOLD = 0.01  # Минимальная громкость для реакции
+BASS_RATIO_THRESHOLD = 0.3  # Минимальное отношение бас/общая громкость
 
 # Инициализация устройств
 spi = spidev.SpiDev()
@@ -30,52 +29,56 @@ stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE,
 print("** INITIALIZED **")
 
 
-class BassTracker:
+class AudioProcessor:
     def __init__(self):
-        self.smoothed_bass = 0
+        self.smoothed_bass_ratio = 0
+        self.smoothed_volume = 0
         self.last_active_time = 0
-        self.active = False
 
-    def update(self, current_bass):
-        # Проверка превышения порога
-        if current_bass > MIN_BASS_THRESHOLD:
+    def process_audio(self, data):
+        # Расчет общего уровня громкости (RMS)
+        rms = np.sqrt(np.mean(np.square(data.astype(np.float32))))
+
+        # Расчет уровня баса (FFT)
+        fft = np.fft.rfft(np.abs(data))
+        freqs = np.fft.rfftfreq(len(data), 1.0 / RATE)
+        bass_mask = (freqs >= BASS_RANGE[0]) & (freqs <= BASS_RANGE[1])
+        bass_level = np.sum(np.abs(fft[bass_mask]))
+
+        # Нормализация и расчет отношения баса к общей громкости
+        bass_ratio = bass_level / (rms + 1e-10)  # Добавляем маленькое число чтобы избежать деления на 0
+
+        # Сглаживание значений
+        self.smoothed_volume = smooth_value(self.smoothed_volume, rms, SMOOTHING_FACTOR)
+        self.smoothed_bass_ratio = smooth_value(self.smoothed_bass_ratio, bass_ratio, SMOOTHING_FACTOR)
+
+        # Определение активности баса
+        if self.smoothed_volume > MIN_VOLUME_THRESHOLD and self.smoothed_bass_ratio > BASS_RATIO_THRESHOLD:
             self.last_active_time = time.time()
-            self.active = True
-
-        # Проверка времени без активности
-        elif time.time() - self.last_active_time > DECAY_TIME:
-            self.active = False
-
-        # Сглаживание только при активности
-        if self.active:
-            norm_bass = min(current_bass / FIXED_MAX_BASS, 1.0)
-            self.smoothed_bass = smooth_value(self.smoothed_bass, norm_bass, SMOOTHING_FACTOR)
+            active = True
         else:
-            self.smoothed_bass = max(0, self.smoothed_bass - 0.05)  # Плавное затухание
+            active = time.time() - self.last_active_time < 1.0  # Задержка выключения 1 сек
 
-        return self.smoothed_bass if self.active else 0
-
-
-def calculate_bass_level(data, rate):
-    """Точный расчет уровня баса с FFT."""
-    fft = np.fft.rfft(np.abs(data))
-    freqs = np.fft.rfftfreq(len(data), 1.0 / rate)
-    mask = (freqs >= BASS_RANGE[0]) & (freqs <= BASS_RANGE[1])
-    return np.sum(np.abs(fft[mask]))
+        return active, self.smoothed_bass_ratio, self.smoothed_volume
 
 
 def smooth_value(current, target, factor):
-    """Экспоненциальное сглаживание."""
     return factor * target + (1 - factor) * current
 
 
-def bass_to_color(bass_normalized):
-    """Генерация цвета с улучшенной яркостью."""
-    hue = 0.66 - (0.66 * bass_normalized)  # От синего к красному
-    saturation = 1.0
-    lightness = 0.3 + 0.7 * bass_normalized  # Яркость зависит от баса
+def get_bass_color(bass_ratio, volume):
+    """Генерация цвета на основе отношения баса и громкости"""
+    # Нормализованный уровень баса (0-1)
+    norm_bass = min(bass_ratio / 2.0, 1.0)  # Эмпирически подобранный делитель
 
-    r, g, b = colorsys.hls_to_rgb(hue, lightness, saturation)
+    # Цвет от синего (0.66) до красного (0.0)
+    hue = 0.66 - (0.66 * norm_bass)
+
+    # Яркость зависит от общей громкости
+    lightness = 0.1 + 0.7 * min(volume * 100, 1.0)
+
+    # Конвертация в RGB
+    r, g, b = colorsys.hls_to_rgb(hue, lightness, 1.0)
     return (
         int(g * MAX_BRIGHTNESS),
         int(r * MAX_BRIGHTNESS),
@@ -84,7 +87,7 @@ def bass_to_color(bass_normalized):
 
 
 try:
-    tracker = BassTracker()
+    audio_processor = AudioProcessor()
     out = [[0, 0, 0] for _ in range(PIXELS)]
 
     while True:
@@ -94,15 +97,12 @@ try:
             dtype=np.int16
         )
 
-        # Расчет уровня баса
-        bass_level = calculate_bass_level(data, RATE)
-
-        # Обновление состояния
-        smoothed_level = tracker.update(bass_level)
+        # Обработка аудио
+        active, bass_ratio, volume = audio_processor.process_audio(data)
 
         # Генерация цвета
-        if smoothed_level > 0:
-            color = bass_to_color(smoothed_level)
+        if active:
+            color = get_bass_color(bass_ratio, volume)
         else:
             color = (0, 0, 0)
 
